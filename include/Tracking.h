@@ -115,6 +115,9 @@ public:
     bool mbOnlyTracking;
 
     void Reset();
+    
+    //protected -> public 
+    Frame mLastFrame;
         
 protected:
 
@@ -209,7 +212,6 @@ protected:
 
     //Last Frame, KeyFrame and Relocalisation Info
     KeyFrame* mpLastKeyFrame;
-    Frame mLastFrame;
     unsigned int mnLastKeyFrameId;
     unsigned int mnLastRelocFrameId;
 
