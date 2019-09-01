@@ -401,7 +401,7 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
 }
 
 /// @brief 该位姿相对于世界坐标系，即相对于第一个位姿
-cv::Mat System::GetCurrFramePose(){
+cv::Mat System::GetCurrFramePose() const{
   
    Frame CurrentFrame = mpTracker->mCurrentFrame;
    cv::Mat CurrentFramePose = CurrentFrame.mTcw;
@@ -421,10 +421,19 @@ cv::Mat System::GetCurrFramePose(){
 }
 
 /// @brief 世界坐标系到相机坐标系的变换矩阵
-cv::Mat System::GetWorldToCurrFramePose(){
+cv::Mat System::GetWorldToCurrFramePose() const {
     Frame CurrentFrame = mpTracker->mCurrentFrame;
     cv::Mat CurrentFramePose = CurrentFrame.mTcw;
     return CurrentFramePose;
+}
+
+
+cv::Mat System::GetWorldTolastFramePose() const{
+   Frame LastFrame = mpTracker->mLastFrame;
+   cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);
+   LastFrame.GetRotationInverse().copyTo(LastTwc.rowRange(0,3).colRange(0,3));
+   LastFrame.GetCameraCenter().copyTo(LastTwc.rowRange(0,3).col(3));
+   return LastTwc;
 }
 
 /// @brief 设置世界坐标系到相机坐标系的变换矩阵

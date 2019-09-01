@@ -76,7 +76,6 @@ int main(int argc, char **argv)
     //SLAM.LoadMap("../../pointcloud/test_map_09_26.bin");
     //getchar();
     
-    for(int loop=0; loop<total_loop; loop++){
         for(int index=start_index; index<=end_index; index++)
         {
             // Read left and right images from file
@@ -94,8 +93,8 @@ int main(int argc, char **argv)
                continue;
             }
 	
-	    cv::Mat currentPose = SLAM.GetCurrFramePose();
-	    cout<<currentPose<<endl;
+	    //cv::Mat currentPose = SLAM.GetCurrFramePose();
+	    //cout<<currentPose<<endl;
 	    /*
 	    int u_coner = (imLeft.cols-crop_width)/2.0;
             int v_coner = imLeft.rows-crop_height;
@@ -106,9 +105,8 @@ int main(int argc, char **argv)
 	    Mat depth_gt = depth_visual(rect).clone();
              */
             // Pass the images to the SLAM system
-//            SLAM.TrackStereo(imLeft, imRight,index);     
+            SLAM.TrackStereo(imLeft, imRight,index);     
         } 
-    }
     
     // Stop all threads
     //SLAM.SaveMap("../../pointcloud/map.bin");

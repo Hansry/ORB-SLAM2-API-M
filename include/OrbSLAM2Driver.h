@@ -29,7 +29,23 @@ public:
     virtual ~OrbSLAMDriver() {
       delete last_egomotion_;
     }
+    
+    ///@brief 返回世界坐标系到当前帧的变换Tcw
+    Eigen::Matrix4f GetPose() const{
+      return MatToEigen(this->GetWorldToCurrFramePose());
+    }
+    
+    ///@brief 获取俩帧之前的相对位置
+    void Track(){
+      cv::Mat CurrentFrame = this->GetWorldToCurrFramePose();
+      cv::Mat LastFrameInv = this->GetWorldTolastFramePose();
+      *(this->last_egomotion_) = MatToEigen(CurrentFrame*LastFrameInv);
+    }
 		  
+    Eigen::Matrix4f GetlastEgomotion() const{
+      return *last_egomotion_;
+    }
+    
 private:
   Eigen::Matrix4f *last_egomotion_;
     

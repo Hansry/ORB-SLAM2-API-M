@@ -114,10 +114,12 @@ public:
     void SetWorldToCurrFramePose(cv::Mat Tcw);
     
     /// @brief 获得当前位姿， 世界坐标系到当前帧的变换矩阵
-    cv::Mat GetWorldToCurrFramePose();
+    cv::Mat GetWorldToCurrFramePose() const;
     
     /// @brief 获得当前帧基于世界坐标系的姿态，其实就是当前帧到世界坐标系的变换矩阵
-    cv::Mat GetCurrFramePose();
+    cv::Mat GetCurrFramePose() const;
+    
+    cv::Mat GetWorldTolastFramePose() const;
 
     // TODO: Save/Load functions
     // SaveMap(const string &filename);
