@@ -34,10 +34,12 @@ LocalMapping::LocalMapping(Map *pMap, const float bMonocular):
 {
 }
 
+
 void LocalMapping::SetLoopCloser(LoopClosing* pLoopCloser)
 {
     mpLoopCloser = pLoopCloser;
 }
+
 
 void LocalMapping::SetTracker(Tracking *pTracker)
 {
@@ -104,8 +106,8 @@ void LocalMapping::Run()
                 KeyFrameCulling();
             }
 
-            // 将当前帧加入到闭环检测队列中
-            mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
+            // 将当前帧加入到闭环检测队列中，这里断开localmapping和loopCloser的联系
+  //          mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
         }
         else if(Stop())
         {
