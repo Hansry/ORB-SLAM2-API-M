@@ -20,5 +20,5 @@ cv::Mat EigenToMat(const Eigen::Matrix4f &Eig_matrix){
   }
   return Matrix;
 }
-  
-}
+
+};

@@ -6,6 +6,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
+MESSAGE(${PROJECT_SOURCE_DIR})
 
 # Check C++11 or C++0x support
 add_definitions(-DCOMPILEDWITHC11)
@@ -67,6 +68,8 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 add_executable(stereo_kitti Examples/Stereo/stereo_kitti.cpp)
 target_link_libraries(stereo_kitti ${PROJECT_NAME})
 
+add_executable(api_test Examples/API_Test/api_test.cpp)
+target_link_libraries(api_test ${PROJECT_NAME})
 #add_executable(stereo_EuRoC Examples/Stereo/stereo_EuRoC.cpp)
 #target_link_libraries(stereo_EuRoC ${PROJECT_NAME})
 

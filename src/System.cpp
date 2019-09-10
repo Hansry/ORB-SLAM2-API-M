@@ -143,7 +143,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
             while(!mpLocalMapper->isStopped())
             {
                 //usleep(1000);
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	        std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
 
             mpTracker->InformOnlyTracking(true);// 定位时，只跟踪
