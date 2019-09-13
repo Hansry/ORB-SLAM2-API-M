@@ -63,10 +63,11 @@ We use [OpenCV](http://opencv.org) to manipulate images and features. Dowload an
 
 ## Eigen3
 Download from http://eigen.tuxfamily.org/index.php?title=News:Eigen_3.2.2_released!
+```
 a. sudo tar -xzvf eigen-eigen-b9cd8366d4e8.tar.gz -C /usr/local/include
 b. sudo mv /usr/local/include/eigen-eigen-b9cd8366d4e8 /usr/local/include/eigen3
 c. sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include 
-
+```
 
 ## BLAS and LAPACK
 [BLAS](http://www.netlib.org/blas) and [LAPACK](http://www.netlib.org/lapack) libraries are requiered by g2o (see below). On ubuntu:
