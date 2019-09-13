@@ -61,7 +61,7 @@ We use [Pangolin](https://github.com/stevenlovegrove/Pangolin) for visualization
 ## OpenCV
 We use [OpenCV](http://opencv.org) to manipulate images and features. Dowload and install instructions can be found at: http://opencv.org. **Required at leat 2.4.3. Tested with OpenCV 2.4.11**.
 
-## Eigen3
+## Eigen3.2
 Download from http://eigen.tuxfamily.org/index.php?title=News:Eigen_3.2.2_released!
 ```
 a. sudo tar -xzvf eigen-eigen-b9cd8366d4e8.tar.gz -C /usr/local/include

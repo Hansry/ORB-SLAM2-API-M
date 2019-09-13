@@ -199,7 +199,7 @@ class G2O_TYPES_SBA_API EdgeProjectXYZ2UVU : public  BaseBinaryEdge<3, Vector3D,
     //  virtual void linearizeOplus();
 };
 
-class  EdgeSE3ProjectXYZ: public  BaseBinaryEdge<2, Vector2d, VertexSBAPointXYZ, VertexSE3Expmap>{
+class  EdgeSE3ProjectXYZ: public  BaseBinaryEdge<2, Eigen::Vector2d, VertexSBAPointXYZ, VertexSE3Expmap>{
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -212,7 +212,7 @@ public:
   void computeError()  {
     const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[1]);
     const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-    Vector2d obs(_measurement);
+    Eigen::Vector2d obs(_measurement);
     _error = obs-cam_project(v1->estimate().map(v2->estimate()));
   }
 
@@ -225,13 +225,13 @@ public:
 
   virtual void linearizeOplus();
 
-  Vector2d cam_project(const Vector3d & trans_xyz) const;
+  Eigen::Vector2d cam_project(const Eigen::Vector3d & trans_xyz) const;
 
   double fx, fy, cx, cy;
 };
 
 
-class  EdgeStereoSE3ProjectXYZ: public  BaseBinaryEdge<3, Vector3d, VertexSBAPointXYZ, VertexSE3Expmap>{
+class  EdgeStereoSE3ProjectXYZ: public  BaseBinaryEdge<3, Eigen::Vector3d, VertexSBAPointXYZ, VertexSE3Expmap>{
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -244,7 +244,7 @@ public:
   void computeError()  {
     const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[1]);
     const VertexSBAPointXYZ* v2 = static_cast<const VertexSBAPointXYZ*>(_vertices[0]);
-    Vector3d obs(_measurement);
+    Eigen::Vector3d obs(_measurement);
     _error = obs - cam_project(v1->estimate().map(v2->estimate()),bf);
   }
 
@@ -257,12 +257,12 @@ public:
 
   virtual void linearizeOplus();
 
-  Vector3d cam_project(const Vector3d & trans_xyz, const float &bf) const;
+  Eigen::Vector3d cam_project(const Eigen::Vector3d & trans_xyz, const float &bf) const;
 
   double fx, fy, cx, cy, bf;
 };
 
-class  EdgeSE3ProjectXYZOnlyPose: public  BaseUnaryEdge<2, Vector2d, VertexSE3Expmap>{
+class  EdgeSE3ProjectXYZOnlyPose: public  BaseUnaryEdge<2, Eigen::Vector2d, VertexSE3Expmap>{
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -274,7 +274,7 @@ public:
 
   void computeError()  {
     const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[0]);
-    Vector2d obs(_measurement);
+    Eigen::Vector2d obs(_measurement);
     _error = obs-cam_project(v1->estimate().map(Xw));
   }
 
@@ -286,14 +286,14 @@ public:
 
   virtual void linearizeOplus();
 
-  Vector2d cam_project(const Vector3d & trans_xyz) const;
+  Eigen::Vector2d cam_project(const Eigen::Vector3d & trans_xyz) const;
 
-  Vector3d Xw;
+  Eigen::Vector3d Xw;
   double fx, fy, cx, cy;
 };
 
 
-class  EdgeStereoSE3ProjectXYZOnlyPose: public  BaseUnaryEdge<3, Vector3d, VertexSE3Expmap>{
+class  EdgeStereoSE3ProjectXYZOnlyPose: public  BaseUnaryEdge<3, Eigen::Vector3d, VertexSE3Expmap>{
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -305,7 +305,7 @@ public:
 
   void computeError()  {
     const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[0]);
-    Vector3d obs(_measurement);
+    Eigen::Vector3d obs(_measurement);
     _error = obs - cam_project(v1->estimate().map(Xw));
   }
 
@@ -317,9 +317,9 @@ public:
 
   virtual void linearizeOplus();
 
-  Vector3d cam_project(const Vector3d & trans_xyz) const;
+  Eigen::Vector3d cam_project(const Eigen::Vector3d & trans_xyz) const;
 
-  Vector3d Xw;
+  Eigen::Vector3d Xw;
   double fx, fy, cx, cy, bf;
 };
 
@@ -327,3 +327,4 @@ public:
 } // end namespace
 
 #endif
+
