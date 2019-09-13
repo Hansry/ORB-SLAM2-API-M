@@ -62,7 +62,11 @@ We use [Pangolin](https://github.com/stevenlovegrove/Pangolin) for visualization
 We use [OpenCV](http://opencv.org) to manipulate images and features. Dowload and install instructions can be found at: http://opencv.org. **Required at leat 2.4.3. Tested with OpenCV 2.4.11**.
 
 ## Eigen3
-Required by g2o (see below). Download and install instructions can be found at: http://eigen.tuxfamily.org. **Required at least 3.1.0**.
+Download from http://eigen.tuxfamily.org/index.php?title=News:Eigen_3.2.2_released!
+a. sudo tar -xzvf eigen-eigen-b9cd8366d4e8.tar.gz -C /usr/local/include
+b. sudo mv /usr/local/include/eigen-eigen-b9cd8366d4e8 /usr/local/include/eigen3
+c. sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include 
+
 
 ## BLAS and LAPACK
 [BLAS](http://www.netlib.org/blas) and [LAPACK](http://www.netlib.org/lapack) libraries are requiered by g2o (see below). On ubuntu:
