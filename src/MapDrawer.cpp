@@ -59,8 +59,8 @@ void MapDrawer::DrawMapPoints()
     //显示所有的地图点（不包括局部地图点），大小为2个像素，黑色
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
-    glColor3f(0.0,0.0,0.0);
-
+    //glColor3f(0.0,0.0,0.0);
+    glColor3f(1.0,0.0,0.0);
     for(size_t i=0, iend=vpMPs.size(); i<iend;i++)
     {
         // 不包括ReferenceMapPoints（局部地图点）
@@ -75,7 +75,8 @@ void MapDrawer::DrawMapPoints()
     //显示局部地图点，大小为2个像素，红色
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
-    glColor3f(1.0,0.0,0.0);
+    //glColor3f(0.0,0.0,0.0);
+    glColor3f(1.0,1.0,1.0);
 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {

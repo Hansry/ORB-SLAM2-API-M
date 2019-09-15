@@ -45,8 +45,20 @@ public:
       return last_egomotion_;
     }
     
-    ORB_SLAM2::MapDrawer* GetMapDriver() const{
-      return this->mpMapDrawer;
+    ORB_SLAM2::MapDrawer* GetOrbSlamMapDrawer() const{
+        return this->GetMapDrawer();
+    }
+    
+    ORB_SLAM2::FrameDrawer* GetOrbSlamFrameDrawer() const{
+        return this->GetFrameDrawer();
+    }
+    
+    ORB_SLAM2::Tracking* GetOrbSlamTracker() const{
+        return this->GetTracker();
+    }
+    
+    cv::Mat orbTrackStereo(const cv::Mat& imleft, const cv::Mat& imright, const double& timestamp) {
+         return this->TrackStereo(imleft, imright, timestamp);
     }
     
     cv::Mat orbTrackStereo(cv::Mat& imleft, cv::Mat& imright, int timestamp) {

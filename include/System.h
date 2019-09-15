@@ -127,7 +127,17 @@ public:
     
     void test();
     
-    MapDrawer* mpMapDrawer;
+    MapDrawer* GetMapDrawer() const{
+      return this->mpMapDrawer;
+    }
+    
+    FrameDrawer* GetFrameDrawer() const{
+      return this->mpFrameDrawer;
+    }
+    
+    Tracking* GetTracker() const{
+      return this->mpTracker;
+    }
 
 private:
 
@@ -160,6 +170,7 @@ private:
 
     FrameDrawer* mpFrameDrawer;
    // MapDrawer* mpMapDrawer;
+    MapDrawer* mpMapDrawer;
 
     // System threads: Local Mapping, Loop Closing, Viewer.
     // The Tracking thread "lives" in the main execution thread that creates the System object.

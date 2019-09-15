@@ -25,7 +25,7 @@
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iostream>     // std::cout, std::fixed
-#include <iomanip>		// std::setprecision
+#include <iomanip>     // std::setprecision
 bool has_suffix(const std::string &str, const std::string &suffix) {
   std::size_t index = str.find(suffix, str.size() - suffix.size());
   return (index != std::string::npos);
