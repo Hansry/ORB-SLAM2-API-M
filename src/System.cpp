@@ -22,6 +22,7 @@
 
 #include "System.h"
 #include "Converter.h"
+#include <MapDrawer.h>
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iostream>     // std::cout, std::fixed
@@ -116,7 +117,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Set pointers between threads
     mpTracker->SetLocalMapper(mpLocalMapper);
     //mpTracker->SetLoopClosing(mpLoopCloser);
-
+    
+    mpMapDrawer->SetTracker(mpTracker);
     mpLocalMapper->SetTracker(mpTracker);
     //mpLocalMapper->SetLoopCloser(mpLoopCloser);
 

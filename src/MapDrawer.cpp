@@ -89,6 +89,108 @@ void MapDrawer::DrawMapPoints()
     glEnd();
 }
 
+void MapDrawer::SetTracker(Tracking* Tracker){
+     mpDrawerTracker = Tracker;
+}
+
+
+void MapDrawer::DrawTracjectory(){ 
+   const float  &w = mKeyFrameSize;
+   const float h = w*0.35;
+   const float z = w*0.3;
+   
+   vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();   
+   sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+   
+   float last_x = 0.0;
+   float last_y = 0.0;
+   float last_z = 0.0;
+   //第一帧为世界坐标系
+   cv::Mat Two = vpKFs[0]->GetPoseInverse();
+   list<ORB_SLAM2::KeyFrame*>::iterator lRit =  mpDrawerTracker->mlpReferences.begin();
+   list<double>::iterator lT = mpDrawerTracker->mlFrameTimes.begin();
+   for(list<cv::Mat>::iterator lit=mpDrawerTracker->mlRelativeFramePoses.begin(),
+        lend=mpDrawerTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++){
+      
+      ORB_SLAM2::KeyFrame* pKF = *lRit;
+      cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);
+      
+      while(pKF->isBad()){
+	Trw = Trw*pKF->mTcp;
+	pKF = pKF->GetParent();
+      }
+      //其中Trw为世界坐标系到参考帧坐标系的相对变换
+      Trw = Trw * pKF->GetPose()*Two;
+      cv::Mat Tcw = (*lit) * Trw; 
+      
+      
+      cv::Mat Twc = cv::Mat::eye(4,4,CV_32F);
+      cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
+      cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
+      
+      for(int i=0;i<3;i++){
+	for(int j=0;j<3;j++){
+	  Twc.at<float>(i,j) = Rwc.at<float>(i,j);
+	}
+      }
+      Twc.at<float>(0,3) = twc.at<float>(0);
+      Twc.at<float>(1,3) = twc.at<float>(1);
+      Twc.at<float>(2,3) = twc.at<float>(2);
+      
+      Twc = Twc.t();
+                
+      glPushMatrix();
+
+      //（由于使用了glPushMatrix函数，因此当前帧矩阵为世界坐标系下的单位矩阵）
+      //因为OpenGL中的矩阵为列优先存储
+      glMultMatrixf(Twc.ptr<GLfloat>(0));
+
+      //设置绘制图形时线的宽度
+      glLineWidth(mKeyFrameLineWidth);
+      //设置当前颜色为蓝色(关键帧图标显示为蓝色)
+      glColor3f(0.0f,0.0f,1.0f);
+      //用线将下面的顶点两两相连
+      glBegin(GL_LINES);
+      glVertex3f(0,0,0);
+      glVertex3f(w,h,z);
+      glVertex3f(0,0,0);
+      glVertex3f(w,-h,z);
+      glVertex3f(0,0,0);
+      glVertex3f(-w,-h,z);
+      glVertex3f(0,0,0);
+      glVertex3f(-w,h,z);
+
+      glVertex3f(w,h,z);
+      glVertex3f(w,-h,z);
+
+      glVertex3f(-w,h,z);
+      glVertex3f(-w,-h,z);
+
+      glVertex3f(-w,h,z);
+      glVertex3f(w,h,z);
+
+      glVertex3f(-w,-h,z);
+      glVertex3f(w,-h,z);
+      glEnd();
+
+      glPopMatrix();  
+      
+      if(lit!=mpDrawerTracker->mlRelativeFramePoses.begin()){
+          //设置绘制图形时线的宽度
+          glLineWidth(2.0);
+          //设置共视图连接线为绿色，透明度为0.6f
+          glColor4f(0.0f,1.0f,0.0f,0.6f);
+          glBegin(GL_LINES);
+          glVertex3f(last_x,last_y,last_z);
+          glVertex3f(twc.at<float>(0),twc.at<float>(1),twc.at<float>(2));
+          glEnd();
+      }
+      last_x = twc.at<float>(0);
+      last_y = twc.at<float>(1);
+      last_z = twc.at<float>(2);
+  }
+}
+
 //关于gl相关的函数，可直接google, 并加上msdn关键词
 void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph)
 {
@@ -109,11 +211,11 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph)
             KeyFrame* pKF = vpKFs[i];
             //转置, OpenGL中的矩阵为列优先存储
             cv::Mat Twc = pKF->GetPoseInverse().t();
-
+	    
             glPushMatrix();
 
             //（由于使用了glPushMatrix函数，因此当前帧矩阵为世界坐标系下的单位矩阵）
-            //因为OpenGL中的矩阵为列优先存储，因此实际为Tcw，即相机在世界坐标下的位姿
+            //因为OpenGL中的矩阵为列优先存储
             glMultMatrixf(Twc.ptr<GLfloat>(0));
 
             //设置绘制图形时线的宽度
@@ -121,29 +223,28 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph)
             //设置当前颜色为蓝色(关键帧图标显示为蓝色)
             glColor3f(0.0f,0.0f,1.0f);
             //用线将下面的顶点两两相连
-            glBegin(GL_LINES);
-            glVertex3f(0,0,0);
-            glVertex3f(w,h,z);
-            glVertex3f(0,0,0);
-            glVertex3f(w,-h,z);
-            glVertex3f(0,0,0);
-            glVertex3f(-w,-h,z);
-            glVertex3f(0,0,0);
-            glVertex3f(-w,h,z);
+	    glBegin(GL_LINES);
+	    glVertex3f(0,0,0);
+	    glVertex3f(w,h,z);
+	    glVertex3f(0,0,0);
+	    glVertex3f(w,-h,z);
+	    glVertex3f(0,0,0);
+	    glVertex3f(-w,-h,z);
+	    glVertex3f(0,0,0);
+	    glVertex3f(-w,h,z);
 
-            glVertex3f(w,h,z);
-            glVertex3f(w,-h,z);
+	    glVertex3f(w,h,z);
+	    glVertex3f(w,-h,z);
 
-            glVertex3f(-w,h,z);
-            glVertex3f(-w,-h,z);
+	    glVertex3f(-w,h,z);
+	    glVertex3f(-w,-h,z);
 
-            glVertex3f(-w,h,z);
-            glVertex3f(w,h,z);
+	    glVertex3f(-w,h,z);
+	    glVertex3f(w,h,z);
 
-            glVertex3f(-w,-h,z);
-            glVertex3f(w,-h,z);
-            glEnd();
-
+	    glVertex3f(-w,-h,z);
+	    glVertex3f(w,-h,z);
+	    glEnd();
             glPopMatrix();
         }
     }

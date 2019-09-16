@@ -25,25 +25,30 @@
 #include"MapPoint.h"
 #include"KeyFrame.h"
 #include<pangolin/pangolin.h>
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "Tracking.h"
 #include<mutex>
 
 namespace ORB_SLAM2
 {
 
+class Tracking;
+class KeyFrame;
 class MapDrawer
 {
 public:
     MapDrawer(Map* pMap, const string &strSettingPath);
 
     Map* mpMap;
-
     void DrawMapPoints();
     void DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph);
     void DrawCurrentCamera(pangolin::OpenGlMatrix &Twc);
     void SetCurrentCameraPose(const cv::Mat &Tcw);
     void SetReferenceKeyFrame(KeyFrame *pKF);
     void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
+    void DrawTracjectory();
+    void SetTracker(Tracking *Tracker);
 
 private:
 
@@ -55,6 +60,7 @@ private:
     float mCameraLineWidth;
 
     cv::Mat mCameraPose;
+    Tracking* mpDrawerTracker;
 
     std::mutex mMutexCamera;
 };

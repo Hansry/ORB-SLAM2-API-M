@@ -47,6 +47,7 @@ class Tracking;
 class LocalMapping;
 class LoopClosing;
 class Frame;
+class MapDrawer;
 
 class System
 {
