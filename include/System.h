@@ -58,7 +58,7 @@ public:
         STEREO=1,
         RGBD=2
     };
-
+    
 public:
 
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
@@ -121,6 +121,9 @@ public:
     cv::Mat GetCurrFramePose() const;
     
     cv::Mat GetWorldTolastFramePose() const;
+    
+    /// @brief 获得当前的跟踪状态,==2的时候为跟踪成功
+    int GetTrackingState() const;
 
     // TODO: Save/Load functions
     // SaveMap(const string &filename);

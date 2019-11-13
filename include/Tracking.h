@@ -52,7 +52,6 @@ class System;
 
 class Tracking
 {  
-
 public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
@@ -76,16 +75,16 @@ public:
 
 
 public:
-
+    
     // Tracking states
     enum eTrackingState{
-        SYSTEM_NOT_READY=-1,
-        NO_IMAGES_YET=0,
-        NOT_INITIALIZED=1,
-        OK=2,
-        LOST=3
+       SYSTEM_NOT_READY=-1,
+       NO_IMAGES_YET=0,
+       NOT_INITIALIZED=1,
+       OK=2,
+       LOST=3
     };
-
+  
     eTrackingState mState;
     eTrackingState mLastProcessedState;
 

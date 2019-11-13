@@ -420,6 +420,12 @@ cv::Mat System::GetCurrFramePose() const{
     return CurrentFramePose;
 }
 
+/// @brief 得到此时的跟踪状态
+int System::GetTrackingState() const{
+      return mpTracker->mState;
+}
+
+
 /// @brief 世界坐标系到相机坐标系的变换矩阵
 cv::Mat System::GetWorldToCurrFramePose() const {
     Frame CurrentFrame = mpTracker->mCurrentFrame;
@@ -479,7 +485,6 @@ void System::SaveTrajectoryKITTI(const string &filename)
 
         while(pKF->isBad())
         {
-          //  cout << "bad parent" << endl;
             Trw = Trw*pKF->mTcp;
             pKF = pKF->GetParent();
         }

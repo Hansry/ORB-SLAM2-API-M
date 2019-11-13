@@ -532,7 +532,7 @@ void Tracking::Track()
                 cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);
                 mLastFrame.GetRotationInverse().copyTo(LastTwc.rowRange(0,3).colRange(0,3));
                 mLastFrame.GetCameraCenter().copyTo(LastTwc.rowRange(0,3).col(3));
-                mVelocity = mCurrentFrame.mTcw*LastTwc; // Tcl， 上一帧到当前帧的
+                mVelocity = mCurrentFrame.mTcw*LastTwc; // Tcl， 当前帧到上一帧的变换矩阵
             }
             else
                 mVelocity = cv::Mat();
