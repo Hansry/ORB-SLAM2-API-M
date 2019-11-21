@@ -49,7 +49,8 @@ public:
     void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
     void DrawTracjectory();
     void SetTracker(Tracking *Tracker);
-
+    cv::Mat GetCameraPose();
+    
 private:
 
     float mKeyFrameSize;

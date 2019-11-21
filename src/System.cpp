@@ -445,6 +445,9 @@ cv::Mat System::GetWorldTolastFramePose() const{
 /// @brief 设置世界坐标系到相机坐标系的变换矩阵
 void System::SetWorldToCurrFramePose(cv::Mat Tcw){
    Frame CurrentFrame = mpTracker->mCurrentFrame;
+//    cv::Mat currTwc = cv::Mat::eye(4,4 CV_32F);
+//    CurrentFrame.GetRotationInverse().copyTo(currTwc.rowRange(0,3).colRange(0,3));
+//    CurrentFrame.GetCameraCenter().copyTo(currTwc.rowRange(0,3).col(3));
    CurrentFrame.SetPose(Tcw);
 }
 

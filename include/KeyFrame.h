@@ -47,7 +47,7 @@ class KeyFrameDatabase;
 class KeyFrame
 {
 public:
-    KeyFrame(Frame &F, Map* pMap, KeyFrameDatabase* pKFDB);
+    KeyFrame(Frame &, Map* pMap, KeyFrameDatabase* pKFDB);
 
     // Pose functions
     // 这里的set,get需要用到锁
