@@ -430,7 +430,7 @@ int System::GetTrackingState() const{
 cv::Mat System::GetWorldToCurrFramePose() const {
     Frame CurrentFrame = mpTracker->mCurrentFrame;
     cv::Mat CurrentFramePose = CurrentFrame.mTcw;
-    return CurrentFramePose;
+    return CurrentFramePose.inv();
 }
 
 
