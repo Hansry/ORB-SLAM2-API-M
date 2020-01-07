@@ -76,6 +76,11 @@ public:
     double mpLastKeyFrameTimeStamp() const{
         return mpLastKeyFrame->mTimeStamp;
     }
+    
+    // 获得跟踪强度
+    int getMatchInlier() const{
+      return mnMatchesInliers;
+    }
 
 public:
     
