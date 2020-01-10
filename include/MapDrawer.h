@@ -50,6 +50,14 @@ public:
     void DrawTracjectory();
     void SetTracker(Tracking *Tracker);
     cv::Mat GetCameraPose();
+    void SetViewKeyframe(size_t offset){
+      if(mpMap->GetAllKeyFrames().size() > offset){
+	startKeyframe = mpMap->GetAllKeyFrames().size() - offset;
+      }
+      else{
+	startKeyframe = 0;
+      }
+    }
     
 private:
 
@@ -59,6 +67,7 @@ private:
     float mPointSize;
     float mCameraSize;
     float mCameraLineWidth;
+    size_t startKeyframe;
 
     cv::Mat mCameraPose;
     Tracking* mpDrawerTracker;
