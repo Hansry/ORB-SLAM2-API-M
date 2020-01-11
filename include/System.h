@@ -112,7 +112,7 @@ public:
     void SaveTrajectoryKITTI(const string &filename);
     
     /// @brief 设置当前帧的位姿,世界坐标系到当前帧的变换矩阵
-    void SetWorldToCurrFramePose(cv::Mat Tcw);
+    void SetCurrFrameToWorldPose(cv::Mat Tcw);
     
     /// @brief 获得当前位姿， 世界坐标系到当前帧的变换矩阵
     cv::Mat GetWorldToCurrFramePose() const;
@@ -188,6 +188,7 @@ private:
 
     // Change mode flags
     std::mutex mMutexMode;
+    
     bool mbActivateLocalizationMode;
     bool mbDeactivateLocalizationMode;
 };

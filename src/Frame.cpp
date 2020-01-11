@@ -268,14 +268,13 @@ void Frame::ExtractORB(int flag, const cv::Mat &im)
  * @brief Set the camera pose.
  * 
  * 设置相机姿态，随后会调用 UpdatePoseMatrices() 来改变mRcw,mRwc等变量的值
- * @param Tcw Transformation from world to camera
  */
 void Frame::SetPose(cv::Mat Tcw)
 {
     mTcw = Tcw.clone();
     UpdatePoseMatrices();
 }
-
+// 
 /**
  * @brief Computes rotation, translation and camera center matrices from the camera pose.
  *
