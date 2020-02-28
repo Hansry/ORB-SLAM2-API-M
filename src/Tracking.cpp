@@ -266,7 +266,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
 
     // 步骤3：构造Frame
     mCurrentFrame = Frame(mImGray,imDepth,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
-
+    
     // 步骤4：跟踪
     Track();
 
@@ -491,6 +491,7 @@ void Tracking::Track()
         }
 
         // 将最新的关键帧作为reference frame
+        
         mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
         // If we have an initial estimation of the camera pose and matching. Track the local map.
@@ -498,6 +499,23 @@ void Tracking::Track()
         // local map:当前帧、当前帧的MapPoints、当前关键帧与其它关键帧共视关系
         // 在步骤2.1中主要是两两跟踪（恒速模型跟踪上一帧、跟踪参考帧），这里搜索局部关键帧后搜集所有局部MapPoints，
         // 然后将局部MapPoints和当前帧进行投影匹配，得到更多匹配的MapPoints后进行Pose优化
+	cout << "Tracking 502: " << bOK << endl;
+	cout << "Tracking 503: " << mCurrentFrame.mTcw << endl; 
+	{
+           unique_lock<mutex> locker(mutexTracking_n);
+           globalLabel_n = true;
+           condTracking_n.notify_one();
+        }
+        
+        {
+           unique_lock<mutex> lock(mutexTracking);
+           while(!globalLable){
+             condTracking.wait(lock);
+           }
+           globalLable = false;
+        }
+        
+        cout <<"Tracking.cpp 518: "<< mCurrentFrame.mTcw << endl; 
         if(!mbOnlyTracking)
         {
             if(bOK)
@@ -513,7 +531,8 @@ void Tracking::Track()
             if(bOK && !mbVO)
                 bOK = TrackLocalMap();
         }
-
+        
+        cout << "Tracking.cpp 535: " << mCurrentFrame.mTcw << endl;
         if(bOK)
             mState = OK;
         else
@@ -521,7 +540,7 @@ void Tracking::Track()
 
         // Update drawer
         mpFrameDrawer->Update(this);
-
+        
         // If tracking were good, check if we insert a keyframe
         if(bOK)
         {
@@ -1211,18 +1230,23 @@ bool Tracking::TrackLocalMap()
 {
     // We have an estimation of the camera pose and some map points tracked in the frame.
     // We retrieve the local map and try to find matches to points in the local map.
-
+    
     // Update Local KeyFrames and Local Points
-    // 步骤1：更新局部关键帧mvpLocalKeyFrames和局部地图点mvpLocalMapPoints
+    // 步骤1：更新局部关键帧mvpLocalKeyFrames和局部地图点mvpLocalMapPoints  
+  
     UpdateLocalMap();
 
     // 步骤2：在局部地图中查找与当前帧匹配的MapPoints
     SearchLocalPoints();
+    
+    cout <<"Tracking.cpp 1242: "<< mCurrentFrame.mTcw << endl;
 
     // Optimize Pose
     // 在这个函数之前，在Relocalization、TrackReferenceKeyFrame、TrackWithMotionModel中都有位姿优化，
     // 步骤3：更新局部所有MapPoints后对位姿再次优化
     Optimizer::PoseOptimization(&mCurrentFrame);
+    
+    cout <<"Tracking.cpp 1249: "<< mCurrentFrame.mTcw << endl;
     mnMatchesInliers = 0;
 
     // Update MapPoints Statistics

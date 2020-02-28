@@ -28,6 +28,7 @@
 #include "KeyFrameDatabase.h"
 
 #include <mutex>
+#include <condition_variable>
 
 
 namespace ORB_SLAM2
@@ -72,6 +73,13 @@ public:
         return mlNewKeyFrames.size();
     }
     
+    std::list<KeyFrame*>* getProcessKeyFrames(){
+      unique_lock<std::mutex> lock(mMutexProcessKFs);
+      return &(mProcessKeyFrames);
+    }
+    
+    std::condition_variable cond;
+    
 protected:
 
     bool CheckNewKeyFrames();
@@ -106,12 +114,15 @@ protected:
 
     // Tracking线程向LocalMapping中插入关键帧是先插入到该队列中
     std::list<KeyFrame*> mlNewKeyFrames; ///< 等待处理的关键帧列表
+    
+    std::list<KeyFrame*> mProcessKeyFrames; ///LocalMapping 后的关键帧列表
 
     KeyFrame* mpCurrentKeyFrame;
 
     std::list<MapPoint*> mlpRecentAddedMapPoints;
 
     std::mutex mMutexNewKFs;
+    std::mutex mMutexProcessKFs;
 
     bool mbAbortBA;
 

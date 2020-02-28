@@ -282,6 +282,7 @@ void System::Reset()
     mbReset = true;
 }
 
+
 void System::Shutdown()
 {
     mpLocalMapper->RequestFinish();
@@ -429,7 +430,10 @@ int System::GetTrackingState() const{
 /// @brief 世界坐标系到相机坐标系的变换矩阵
 cv::Mat System::GetWorldToCurrFramePose() const {
     Frame CurrentFrame = mpTracker->mCurrentFrame;
-    cv::Mat CurrentFramePose = CurrentFrame.mTcw;
+    cv::Mat CurrentFramePose = cv::Mat::eye(4, 4, CV_32F);
+    if(CurrentFrame.mTcw.data){
+     CurrentFramePose = CurrentFrame.mTcw.clone(); 
+    }
     return CurrentFramePose.inv();
 }
 
@@ -442,7 +446,7 @@ cv::Mat System::GetWorldTolastFramePose() const{
    return LastTwc;
 }
 
-/// @brief 设置世界坐标系到相机坐标系的变换矩阵
+/// @brief 设置当前帧到世界坐标系的变换矩阵
 void System::SetCurrFrameToWorldPose(cv::Mat Tcw){
    mpTracker->mCurrentFrame.SetPose(Tcw);
 //    cv::Mat currTwc = cv::Mat::eye(4,4 CV_32F);

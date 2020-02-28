@@ -105,7 +105,12 @@ void LocalMapping::Run()
                 // 在这里再删除冗余的关键帧
                 KeyFrameCulling();
             }
-
+            
+            {
+	      unique_lock<mutex> lock(mMutexProcessKFs);
+              mProcessKeyFrames.push_back(mpCurrentKeyFrame);
+// 	      cond.notify_one();
+	    }
             // 将当前帧加入到闭环检测队列中，这里断开localmapping和loopCloser的联系
   //          mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
         }
@@ -199,7 +204,7 @@ void LocalMapping::ProcessNewKeyFrame()
             if(!pMP->isBad())
             {
                 // 非当前帧生成的MapPoints
-				// 为当前帧在tracking过程跟踪到的MapPoints更新属性
+		// 为当前帧在tracking过程跟踪到的MapPoints更新属性
                 if(!pMP->IsInKeyFrame(mpCurrentKeyFrame))
                 {
                     // 添加观测
@@ -811,7 +816,7 @@ void LocalMapping::KeyFrameCulling()
     // 步骤1：根据Covisibility Graph提取当前帧的共视关键帧
     vector<KeyFrame*> vpLocalKeyFrames = mpCurrentKeyFrame->GetVectorCovisibleKeyFrames();
 
-    // 对所有的局部关键帧进行遍历
+    // 对与当前关键帧具有共视的局部关键帧进行遍历
     for(vector<KeyFrame*>::iterator vit=vpLocalKeyFrames.begin(), vend=vpLocalKeyFrames.end(); vit!=vend; vit++)
     {
         KeyFrame* pKF = *vit;
@@ -874,7 +879,6 @@ void LocalMapping::KeyFrameCulling()
                 }
             }
         }
-
         // 步骤4：该局部关键帧90%以上的MapPoints能被其它关键帧（至少3个）观测到，则认为是冗余关键帧
         if(nRedundantObservations>0.9*nMPs)
             pKF->SetBadFlag();

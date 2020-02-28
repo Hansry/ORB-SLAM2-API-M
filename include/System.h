@@ -37,6 +37,8 @@
 #include "Viewer.h"
 #include "Frame.h"
 
+#include <condition_variable>
+
 namespace ORB_SLAM2
 {
 
@@ -111,7 +113,7 @@ public:
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
     void SaveTrajectoryKITTI(const string &filename);
     
-    /// @brief 设置当前帧的位姿,世界坐标系到当前帧的变换矩阵
+    /// @brief 设置当前帧的位姿,当前帧到世界坐标系的变换矩阵
     void SetCurrFrameToWorldPose(cv::Mat Tcw);
     
     /// @brief 获得当前位姿， 世界坐标系到当前帧的变换矩阵
@@ -141,6 +143,10 @@ public:
     
     Tracking* GetTracker() const{
       return this->mpTracker;
+    }
+    
+    LocalMapping* GetLocalMapper() const{
+       return this->mpLocalMapper;
     }
 
 private:
@@ -188,6 +194,7 @@ private:
 
     // Change mode flags
     std::mutex mMutexMode;
+    std::mutex mMutexTest;
     
     bool mbActivateLocalizationMode;
     bool mbDeactivateLocalizationMode;

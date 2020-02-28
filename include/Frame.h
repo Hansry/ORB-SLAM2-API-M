@@ -30,6 +30,8 @@
 #include "KeyFrame.h"
 #include "ORBextractor.h"
 
+#include <mutex>
+#include <condition_variable>
 #include <opencv2/opencv.hpp>
 
 namespace ORB_SLAM2
@@ -227,6 +229,7 @@ private:
     cv::Mat mtcw; ///< Translation from world to camera
     cv::Mat mRwc; ///< Rotation from camera to world
     cv::Mat mOw;  ///< mtwc,Translation from camera to world
+    
 };
 
 }// namespace ORB_SLAM

@@ -39,6 +39,7 @@
 #include "System.h"
 
 #include <mutex>
+#include <condition_variable>
 
 namespace ORB_SLAM2
 {
@@ -125,6 +126,24 @@ public:
     
     //protected -> public 
     Frame mLastFrame;
+    
+    std::condition_variable* getCond(void) {
+      unique_lock<mutex> lock(mutexTracking); 
+      return &condTracking;
+    }
+    
+    bool* getGlobalLable(void){
+      return &globalLable;
+    }
+    
+    std::condition_variable* getCond_n(void){
+      unique_lock<mutex> lock(mutexTracking_n);
+      return &condTracking_n;
+    }
+    
+    bool* getGlobalLable_n(void){
+      return &globalLabel_n;
+    }
         
 protected:
 
@@ -154,6 +173,15 @@ protected:
 
     bool NeedNewKeyFrame();
     void CreateNewKeyFrame();
+    
+    //condition_variable
+    std::condition_variable condTracking;
+    std::mutex mutexTracking;
+    bool globalLable = false;
+    
+    std::condition_variable condTracking_n;
+    std::mutex mutexTracking_n;
+    bool globalLabel_n = false;
 
     // In case of performing only localization, this flag is true when there are no matches to
     // points in the map. Still tracking will continue if there are enough matches with temporal points.
