@@ -499,8 +499,8 @@ void Tracking::Track()
         // local map:当前帧、当前帧的MapPoints、当前关键帧与其它关键帧共视关系
         // 在步骤2.1中主要是两两跟踪（恒速模型跟踪上一帧、跟踪参考帧），这里搜索局部关键帧后搜集所有局部MapPoints，
         // 然后将局部MapPoints和当前帧进行投影匹配，得到更多匹配的MapPoints后进行Pose优化
-	cout << "Tracking 502: " << bOK << endl;
-	cout << "Tracking 503: " << mCurrentFrame.mTcw << endl; 
+// 	cout << "Tracking 502: " << bOK << endl;
+ 	cout << "Tracking 503: " << mCurrentFrame.mTcw << endl; 
 	{
            unique_lock<mutex> locker(mutexTracking_n);
            globalLabel_n = true;
@@ -532,7 +532,7 @@ void Tracking::Track()
                 bOK = TrackLocalMap();
         }
         
-        cout << "Tracking.cpp 535: " << mCurrentFrame.mTcw << endl;
+//         cout << "Tracking.cpp 535: " << mCurrentFrame.mTcw << endl;
         if(bOK)
             mState = OK;
         else
@@ -601,6 +601,7 @@ void Tracking::Track()
             }
         }
 
+        std::cout << "Tracking 604: mState:" << mState << std::endl;
         // Reset if the camera get lost soon after initialization
         // 跟踪失败，并且relocation也没有搞定，只能重新Reset
         if(mState==LOST)

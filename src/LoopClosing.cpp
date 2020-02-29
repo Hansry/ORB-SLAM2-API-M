@@ -67,13 +67,16 @@ void LoopClosing::Run()
         if(CheckNewKeyFrames())
         {
             // Detect loop candidates and check covisibility consistency
+	    cout << "LoopClosing 70: CheckNewKeyFrames -------------------------------------------------------" << endl;
             if(DetectLoop())
             {
+	       cout << "LoopClosing 72: DetecteLoop ------------------------------------------------------------" << endl;
                // Compute similarity transformation [sR|t]
                // In the stereo/RGBD case s=1
                if(ComputeSim3())
                {
                    // Perform loop fusion and pose graph optimization
+		   cout << "LoopClosing 79: CorrectLoop ------------------------------------------------------------" << endl;
                    CorrectLoop();
                }
             }

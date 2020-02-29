@@ -112,7 +112,7 @@ void LocalMapping::Run()
 // 	      cond.notify_one();
 	    }
             // 将当前帧加入到闭环检测队列中，这里断开localmapping和loopCloser的联系
-  //          mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
+            mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
         }
         else if(Stop())
         {
