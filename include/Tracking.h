@@ -91,7 +91,8 @@ public:
        NO_IMAGES_YET=0,
        NOT_INITIALIZED=1,
        OK=2,
-       LOST=3
+       LOST=3,
+       DENSE_MAP_CREATE = 4
     };
   
     eTrackingState mState;
@@ -144,6 +145,10 @@ public:
     bool* getGlobalLable_n(void){
       return &globalLabel_n;
     }
+    
+    bool* getIsDenseMapCreate(void){
+      return &isDenseMapCreate;
+    }
         
 protected:
 
@@ -182,6 +187,7 @@ protected:
     std::condition_variable condTracking_n;
     std::mutex mutexTracking_n;
     bool globalLabel_n = false;
+    bool isDenseMapCreate = false;
 
     // In case of performing only localization, this flag is true when there are no matches to
     // points in the map. Still tracking will continue if there are enough matches with temporal points.

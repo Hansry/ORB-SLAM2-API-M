@@ -341,7 +341,6 @@ void Tracking::Track()
             MonocularInitialization();
 
         mpFrameDrawer->Update(this);
-
         if(mState!=OK)
             return;
     }
@@ -501,19 +500,19 @@ void Tracking::Track()
         // 然后将局部MapPoints和当前帧进行投影匹配，得到更多匹配的MapPoints后进行Pose优化
 // 	cout << "Tracking 502: " << bOK << endl;
  	cout << "Tracking 503: " << mCurrentFrame.mTcw << endl; 
-	{
-           unique_lock<mutex> locker(mutexTracking_n);
-           globalLabel_n = true;
-           condTracking_n.notify_one();
-        }
-        
-        {
-           unique_lock<mutex> lock(mutexTracking);
-           while(!globalLable){
-             condTracking.wait(lock);
-           }
-           globalLable = false;
-        }
+// 	{
+//            unique_lock<mutex> locker(mutexTracking_n);
+//            globalLabel_n = true;
+//            condTracking_n.notify_one();
+//         }
+//         
+//         {
+//            unique_lock<mutex> lock(mutexTracking);
+//            while(!globalLable){
+//              condTracking.wait(lock);
+//            }
+//            globalLable = false;
+//         }
         
         cout <<"Tracking.cpp 518: "<< mCurrentFrame.mTcw << endl; 
         if(!mbOnlyTracking)
