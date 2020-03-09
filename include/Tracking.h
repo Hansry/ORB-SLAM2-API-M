@@ -91,8 +91,7 @@ public:
        NO_IMAGES_YET=0,
        NOT_INITIALIZED=1,
        OK=2,
-       LOST=3,
-       DENSE_MAP_CREATE = 4
+       LOST=3
     };
   
     eTrackingState mState;
@@ -104,6 +103,8 @@ public:
     // Current Frame
     Frame mCurrentFrame;
     cv::Mat mImGray;
+    
+    static std::mutex mutexICP;
 
     // Initialization Variables (Monocular)
     // 初始化时前两帧相关变量
@@ -146,8 +147,17 @@ public:
       return &globalLabel_n;
     }
     
-    bool* getIsDenseMapCreate(void){
-      return &isDenseMapCreate;
+    cv::Mat* getRaycastDepth(void){
+      return &raycast_prev_depth;
+    }
+    
+    cv::Mat* getDepth(void){
+      return &curr_depth;
+    }
+    
+    cv::Mat* getPreKeyframePose(void){
+      unique_lock<mutex> locker(mutexTracking);
+      return &mpreKeyFramePose ;
     }
         
 protected:
@@ -187,8 +197,7 @@ protected:
     std::condition_variable condTracking_n;
     std::mutex mutexTracking_n;
     bool globalLabel_n = false;
-    bool isDenseMapCreate = false;
-
+    
     // In case of performing only localization, this flag is true when there are no matches to
     // points in the map. Still tracking will continue if there are enough matches with temporal points.
     // In that case we are doing visual odometry. The system will try to do relocalization to recover
@@ -214,6 +223,10 @@ protected:
     // Initalization (only for monocular)
     // 单目初始器
     Initializer* mpInitializer;
+    
+    //forICP
+    cv::Mat curr_depth;
+    cv::Mat raycast_prev_depth;
 
     //Local Map
     KeyFrame* mpReferenceKF;// 当前关键帧就是参考帧
@@ -261,6 +274,8 @@ protected:
 
     //Color order (true RGB, false BGR, ignored if grayscale)
     bool mbRGB;
+    
+    cv::Mat mpreKeyFramePose;
 
     list<MapPoint*> mlpTemporalPoints;
 };

@@ -366,10 +366,10 @@ void System::SaveTrajectoryTUM(const string &filename)
 }
 
 
-map<double, cv::Mat> System::SaveKeyFrameTrajectoryTUM(const string &filename)
+void System::SaveKeyFrameTrajectoryTUM(const string &filename)
 {
     cout << endl << "Saving keyframe trajectory to " << filename << " ..." << endl;
-    map<double, cv::Mat> keyframeBase;
+
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 
@@ -384,7 +384,7 @@ map<double, cv::Mat> System::SaveKeyFrameTrajectoryTUM(const string &filename)
     for(size_t i=0; i<vpKFs.size(); i++)
     {
         KeyFrame* pKF = vpKFs[i];
-        cv::Mat currPose = cv::Mat::eye(4, 4, CV_32F);
+
        // pKF->SetPose(pKF->GetPose()*Two);
         if(pKF->isBad())
             continue;
@@ -392,15 +392,12 @@ map<double, cv::Mat> System::SaveKeyFrameTrajectoryTUM(const string &filename)
         cv::Mat R = pKF->GetRotation().t();
         vector<float> q = Converter::toQuaternion(R);
         cv::Mat t = pKF->GetCameraCenter();
-        R.copyTo(currPose.rowRange(0,3).colRange(0,3));
-	t.copyTo(currPose.rowRange(0,3).col(3));
-	keyframeBase[pKF->mTimeStamp] = currPose.clone();
         f << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
           << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+
     }
 
     f.close();
-    return keyframeBase;
     cout << endl << "trajectory saved!" << endl;
 }
 

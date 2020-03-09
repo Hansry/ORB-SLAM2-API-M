@@ -53,6 +53,8 @@ using namespace std;
 namespace ORB_SLAM2
 {
 
+mutex Tracking::mutexICP;
+
 Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
     mpKeyFrameDB(pKFDB), mpInitializer(static_cast<Initializer*>(NULL)), mpSystem(pSys), mpViewer(NULL),
@@ -500,22 +502,22 @@ void Tracking::Track()
         // 在步骤2.1中主要是两两跟踪（恒速模型跟踪上一帧、跟踪参考帧），这里搜索局部关键帧后搜集所有局部MapPoints，
         // 然后将局部MapPoints和当前帧进行投影匹配，得到更多匹配的MapPoints后进行Pose优化
 // 	cout << "Tracking 502: " << bOK << endl;
- 	cout << "Tracking 503: " << mCurrentFrame.mTcw << endl; 
-	{
-           unique_lock<mutex> locker(mutexTracking_n);
-           globalLabel_n = true;
-           condTracking_n.notify_one();
-        }
+//  	cout << "Tracking 503: " << mCurrentFrame.mTcw << endl; 
+// 	{
+//            unique_lock<mutex> locker(mutexTracking_n);
+//            globalLabel_n = true;
+//            condTracking_n.notify_one();
+//         }
+//         
+//         {
+//            unique_lock<mutex> lock(mutexTracking);
+//            while(!globalLable){
+//              condTracking.wait(lock);
+//            }
+//            globalLable = false;
+//         }
         
-        {
-           unique_lock<mutex> lock(mutexTracking);
-           while(!globalLable){
-             condTracking.wait(lock);
-           }
-           globalLable = false;
-        }
-        
-        cout <<"Tracking.cpp 518: "<< mCurrentFrame.mTcw << endl; 
+//         cout <<"Tracking.cpp 518: "<< mCurrentFrame.mTcw << endl; 
         if(!mbOnlyTracking)
         {
             if(bOK)
@@ -1240,14 +1242,21 @@ bool Tracking::TrackLocalMap()
     // 步骤2：在局部地图中查找与当前帧匹配的MapPoints
     SearchLocalPoints();
     
-    cout <<"Tracking.cpp 1242: "<< mCurrentFrame.mTcw << endl;
+//     cout <<"Tracking.cpp 1242: "<< mCurrentFrame.mTcw << endl;
 
     // Optimize Pose
     // 在这个函数之前，在Relocalization、TrackReferenceKeyFrame、TrackWithMotionModel中都有位姿优化，
     // 步骤3：更新局部所有MapPoints后对位姿再次优化
-    Optimizer::PoseOptimization(&mCurrentFrame);
+
+    bool use_icp = false;
+    if(!curr_depth.empty() && !raycast_prev_depth.empty() && use_icp && !mpreKeyFramePose.empty()){
+       Optimizer::PoseOptimization(&mCurrentFrame, curr_depth, raycast_prev_depth, mpreKeyFramePose);
+    }
+    else{
+       Optimizer::PoseOptimization(&mCurrentFrame);
+    }
     
-    cout <<"Tracking.cpp 1249: "<< mCurrentFrame.mTcw << endl;
+//     cout <<"Tracking.cpp 1249: "<< mCurrentFrame.mTcw << endl;
     mnMatchesInliers = 0;
 
     // Update MapPoints Statistics
