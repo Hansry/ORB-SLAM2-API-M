@@ -1249,8 +1249,9 @@ bool Tracking::TrackLocalMap()
     // 步骤3：更新局部所有MapPoints后对位姿再次优化
 
     bool use_icp = false;
+//     cout << "Tracking 1252: " << mpreKeyFramePose << endl;
     if(!curr_depth.empty() && !raycast_prev_depth.empty() && use_icp && !mpreKeyFramePose.empty()){
-       Optimizer::PoseOptimization(&mCurrentFrame, curr_depth, raycast_prev_depth, mpreKeyFramePose);
+       Optimizer::PoseOptimization_icp(&mCurrentFrame, curr_depth, raycast_prev_depth, mpreKeyFramePose);
     }
     else{
        Optimizer::PoseOptimization(&mCurrentFrame);
@@ -1370,16 +1371,19 @@ bool Tracking::NeedNewKeyFrame()
     // 步骤6：决策是否需要插入关键帧
     // Thresholds
     // 设定inlier阈值，和之前帧特征点匹配的inlier比例
-    float thRefRatio = 0.75f;
+//     float thRefRatio = 0.75f; //(origin)
+    float thRefRatio = 0.80f; //(hansry)
     if(nKFs<2)
         thRefRatio = 0.4f;// 关键帧只有一帧，那么插入关键帧的阈值设置很低
     if(mSensor==System::MONOCULAR)
         thRefRatio = 0.9f;
 
     // MapPoints中和地图关联的比例阈值
-    float thMapRatio = 0.35f;
+//     float thMapRatio = 0.35f;//(origin)
+    float thMapRatio = 0.45f; //(hansry)
     if(mnMatchesInliers>300)
-        thMapRatio = 0.20f;
+       thMapRatio = 0.30f; //(hansry)
+//         thMapRatio = 0.20f;//(origin)
 
     // Condition 1a: More than "MaxFrames" have passed from last keyframe insertion
     // 很长时间没有插入关键帧

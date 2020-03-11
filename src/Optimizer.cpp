@@ -597,7 +597,7 @@ int Optimizer::PoseOptimization(Frame *pFrame)
  * @param   pFrame Frame
  * @return  inliers数量
  */
-int Optimizer::PoseOptimization(Frame* pFrame, cv::Mat& curr_depth, cv::Mat& raycast_prev_depth, cv::Mat& prev_pose)
+int Optimizer::PoseOptimization_icp(Frame* pFrame, cv::Mat& curr_depth, cv::Mat& raycast_prev_depth, cv::Mat& prev_pose)
 {
   // 该优化函数主要用于Tracking线程中：运动跟踪、参考帧跟踪、地图跟踪、重定位
 
@@ -788,7 +788,7 @@ int Optimizer::PoseOptimization(Frame* pFrame, cv::Mat& curr_depth, cv::Mat& ray
 	      edge->setId( icp_index );
 	      edge->setVertex(0, dynamic_cast<g2o::VertexSE3Expmap*>(optimizer.vertex(0)));
 	      edge->setMeasurement(Eigen::Vector3d(temp_curr_point.at<float>(0,0), temp_curr_point.at<float>(1,0), temp_curr_point.at<float>(2,0)));//点1=T*点2=点1'
-	      edge->setInformation( Eigen::Matrix3d::Identity()*10 );//误差项系数矩阵  信息矩阵
+	      edge->setInformation( Eigen::Matrix3d::Identity()*40 );//误差项系数矩阵  信息矩阵
 	     
  	      g2o::RobustKernelHuber* rk_icp = new g2o::RobustKernelHuber;
  	      edge->setRobustKernel(rk_icp);

@@ -45,7 +45,7 @@ public:
                                        const unsigned long nLoopKF=0, const bool bRobust = true);
     void static LocalBundleAdjustment(KeyFrame* pKF, bool *pbStopFlag, Map *pMap);
     int static PoseOptimization(Frame* pFrame);
-    int static PoseOptimization(Frame* pFrame, cv::Mat& curr_depth, cv::Mat& raycast_prev_depth, cv::Mat& prev_pose);
+    int static PoseOptimization_icp(Frame* pFrame, cv::Mat& curr_depth, cv::Mat& raycast_prev_depth, cv::Mat& prev_pose);
 
     // if bFixScale is true, 6DoF optimization (stereo,rgbd), 7DoF otherwise (mono)
     void static OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* pCurKF,
