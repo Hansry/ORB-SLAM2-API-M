@@ -148,6 +148,10 @@ public:
     LocalMapping* GetLocalMapper() const{
        return this->mpLocalMapper;
     }
+    
+    Map* GetMap() const {
+      return this->mpMap;
+    }
 
 private:
 
