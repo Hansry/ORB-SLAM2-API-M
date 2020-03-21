@@ -119,8 +119,12 @@ public:
     }
 
     static bool lId(KeyFrame* pKF1, KeyFrame* pKF2)
-	{
+    {
         return pKF1->mnId<pKF2->mnId;
+    }
+    
+    static bool lts(KeyFrame* pKF1, KeyFrame* pKF2){
+        return pKF1->mTimeStamp<pKF2->mTimeStamp;
     }
 
 
