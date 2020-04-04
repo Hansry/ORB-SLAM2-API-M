@@ -603,7 +603,7 @@ void Tracking::Track()
             }
         }
 
-        std::cout << "Tracking 604: mState:" << mState << std::endl;
+//         std::cout << "Tracking 604: mState:" << mState << std::endl;
         // Reset if the camera get lost soon after initialization
         // 跟踪失败，并且relocation也没有搞定，只能重新Reset
         if(mState==LOST)
@@ -622,7 +622,14 @@ void Tracking::Track()
         // 保存上一帧的数据
         mLastFrame = Frame(mCurrentFrame);
     }
-
+    
+    {
+      unique_lock<mutex> lock(mutexTracking);
+      if(!mCurrentFrame.mTcw.empty()){
+         mFrameDataBase[mCurrentFrame.mTimeStamp] = mCurrentFrame.mTcw.clone().inv();
+      }
+    }
+    
     // Store frame pose information to retrieve the complete camera trajectory afterwards.
     // 步骤3：记录位姿信息，用于轨迹复现
     if(!mCurrentFrame.mTcw.empty())
