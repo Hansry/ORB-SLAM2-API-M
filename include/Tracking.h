@@ -159,11 +159,6 @@ public:
       unique_lock<mutex> locker(mutexTracking);
       return &mpreKeyFramePose ;
     }
-    
-    map<double, cv::Mat>* getFrameDataInfo(void){
-      unique_lock<mutex> locker(mutexTracking);
-      return &mFrameDataBase;
-    }
         
 protected:
 
@@ -202,9 +197,6 @@ protected:
     std::condition_variable condTracking_n;
     std::mutex mutexTracking_n;
     bool globalLabel_n = false;
-    
-    //frame database for depth fusion
-    map<double, cv::Mat> mFrameDataBase;
     
     // In case of performing only localization, this flag is true when there are no matches to
     // points in the map. Still tracking will continue if there are enough matches with temporal points.
