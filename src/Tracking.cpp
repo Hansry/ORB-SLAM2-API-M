@@ -623,6 +623,13 @@ void Tracking::Track()
         mLastFrame = Frame(mCurrentFrame);
     }
     
+    {
+      unique_lock<mutex> lock(mutexTracking);
+      if(!mCurrentFrame.mTcw.empty()){
+         mFrameDataBase[mCurrentFrame.mTimeStamp] = mCurrentFrame.mTcw.clone().inv();
+      }
+    }
+    
     // Store frame pose information to retrieve the complete camera trajectory afterwards.
     // 步骤3：记录位姿信息，用于轨迹复现
     if(!mCurrentFrame.mTcw.empty())
