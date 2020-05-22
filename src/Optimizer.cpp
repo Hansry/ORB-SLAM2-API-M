@@ -1349,7 +1349,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
         if(it!=CorrectedSim3.end())
         {
             vScw[nIDi] = it->second;
-            VSim3->setEstimate(it->second);
+            VSim3->setEstimate(it->second);//初始迭代值(hansry)
         }
         else// 如果该关键帧在闭环时没有通过Sim3传播调整过，用自身的位姿
         {
@@ -1357,7 +1357,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
             Eigen::Matrix<double,3,1> tcw = Converter::toVector3d(pKF->GetTranslation());
             g2o::Sim3 Siw(Rcw,tcw,1.0);
             vScw[nIDi] = Siw;
-            VSim3->setEstimate(Siw);
+            VSim3->setEstimate(Siw);//初始迭代值(hansry)
         }
 
         // 闭环匹配上的帧不进行位姿优化
@@ -1381,6 +1381,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
     // Set Loop edges
     // 步骤3：添加边：LoopConnections是闭环时因为MapPoints调整而出现的新关键帧连接关系（不是当前帧与闭环匹配帧之间的连接关系）
+    // 尽可能使用经过Sim3调整的位姿
     for(map<KeyFrame *, set<KeyFrame *> >::const_iterator mit = LoopConnections.begin(), mend=LoopConnections.end(); mit!=mend; mit++)
     {
         KeyFrame* pKF = mit->first;
@@ -1403,7 +1404,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
             e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDj)));
             e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDi)));
             // 根据两个Pose顶点的位姿算出相对位姿作为边，那还存在误差？优化有用？因为闭环MapPoints调整新形成的边不优化？（wubo???）
-            e->setMeasurement(Sji);
+            e->setMeasurement(Sji);//观测值，即特征点坐标值
 
             e->information() = matLambda;
 
@@ -1415,6 +1416,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
     // Set normal edges
     // 步骤4：添加跟踪时形成的边、闭环匹配成功形成的边
+    // 尽量使用经过Sim3调整前关键帧之间的相对关系作为边
     for(size_t i=0, iend=vpKFs.size(); i<iend; i++)
     {
         KeyFrame* pKF = vpKFs[i];
@@ -1462,7 +1464,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
         // Loop edges
         // 步骤4.2：添加在CorrectLoop函数中AddLoopEdge函数添加的闭环连接边（当前帧与闭环匹配帧之间的连接关系）
-        // 使用经过Sim3调整前关键帧之间的相对关系作为边
+        // 尽量使用经过Sim3调整前关键帧之间的相对关系作为边
         const set<KeyFrame*> sLoopEdges = pKF->GetLoopEdges();
         for(set<KeyFrame*>::const_iterator sit=sLoopEdges.begin(), send=sLoopEdges.end(); sit!=send; sit++)
         {
@@ -1492,7 +1494,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
         // Covisibility graph edges
         // 步骤4.3：最有很好共视关系的关键帧也作为边进行优化
-        // 使用经过Sim3调整前关键帧之间的相对关系作为边
+        // 尽量使用经过Sim3调整前关键帧之间的相对关系作为边
         const vector<KeyFrame*> vpConnectedKFs = pKF->GetCovisiblesByWeight(minFeat);
         for(vector<KeyFrame*>::const_iterator vit=vpConnectedKFs.begin(); vit!=vpConnectedKFs.end(); vit++)
         {
@@ -1573,7 +1575,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
         }
         else
         {
-            // 通过情况下MapPoint的参考关键帧就是创建该MapPoint的那个关键帧
+            // 通常情况下MapPoint的参考关键帧就是创建该MapPoint的那个关键帧
             KeyFrame* pRefKF = pMP->GetReferenceKeyFrame();
             nIDr = pRefKF->mnId;
         }

@@ -77,6 +77,8 @@ void LoopClosing::Run()
                {
                    // Perform loop fusion and pose graph optimization
 		   cout << "LoopClosing 79: CorrectLoop ------------------------------------------------------------" << endl;
+		   cout << "LoopClosing 80: CorrectLoop ------------------------------------------------------------" << endl;
+		   cout << "LoopClosing 81: CorrectLoop ------------------------------------------------------------" << endl;
                    CorrectLoop();
                }
             }
@@ -213,7 +215,7 @@ bool LoopClosing::DetectLoop()
             {
                 int nPreviousConsistency = mvConsistentGroups[iG].second;
                 int nCurrentConsistency = nPreviousConsistency + 1;
-                if(!vbConsistentGroup[iG])// 这里作者原本意思是不是应该是vbConsistentGroup[i]而不是vbConsistentGroup[iG]呢？（wubo???）
+                if(!vbConsistentGroup[iG])
                 {
                     // 将该“子候选组”的该关键帧打上编号加入到“当前连续组”
                     ConsistentGroup cg = make_pair(spCandidateGroup,nCurrentConsistency);
@@ -226,7 +228,6 @@ bool LoopClosing::DetectLoop()
                     bEnoughConsistent=true; //this avoid to insert the same candidate more than once
                 }
 
-                //这里是不是缺一个break来提高效率呢？(wubo???)
             }
         }
 
@@ -605,7 +606,7 @@ void LoopClosing::CorrectLoop()
                 // 将该未校正的eigP3Dw先从世界坐标系映射到未校正的pKFi相机坐标系，然后再反映射到校正后的世界坐标系下
                 cv::Mat P3Dw = pMPi->GetWorldPos();
                 Eigen::Matrix<double,3,1> eigP3Dw = Converter::toVector3d(P3Dw);
-                Eigen::Matrix<double,3,1> eigCorrectedP3Dw = g2oCorrectedSwi.map(g2oSiw.map(eigP3Dw));
+                Eigen::Matrix<double,3,1> eigCorrectedP3Dw = g2oCorrectedSwi.map(g2oSiw.map(eigP3Dw)); //Pw=Twi_correct * Tiw * Pw
 
                 cv::Mat cvCorrectedP3Dw = Converter::toCvMat(eigCorrectedP3Dw);
                 pMPi->SetWorldPos(cvCorrectedP3Dw);
@@ -634,7 +635,9 @@ void LoopClosing::CorrectLoop()
         // Start Loop Fusion
         // Update matched map points and replace if duplicated
         // 步骤3：检查当前帧的MapPoints与闭环匹配帧的MapPoints是否存在冲突，对冲突的MapPoints进行替换或填补
-        for(size_t i=0; i<mvpCurrentMatchedPoints.size(); i++)
+        // mvpCurrentMatchedPoints为当前关键帧与闭环帧进行sim3求解后，得到了当前关键帧基于世界坐标系新的位姿Twc，然后将当前关键帧以及相邻关键帧对应的空间点，
+        // 对每一个空间点通过Twc先投影到当前关键帧后得到（u,v），在（u,v）一定半径范围内进行关键点和空间点的匹配 （hansry）
+        for(size_t i=0; i<mvpCurrentMatchedPoints.size(); i++) 
         {
             if(mvpCurrentMatchedPoints[i])
             {
@@ -690,6 +693,7 @@ void LoopClosing::CorrectLoop()
 
     // Optimize graph
     // 步骤6：进行EssentialGraph优化，LoopConnections是形成闭环后新生成的连接关系，不包括步骤7中当前帧与闭环匹配帧之间的连接关系
+    // (因为mvpCurrentConnectedKFS是在当前帧upconnection（）后得到的，因此mvpCurrentConnectedKFS包含了当前帧mCurrentKF与回环帧mpMatchedKF的连接，而在5.1中将这个)
     Optimizer::OptimizeEssentialGraph(mpMap, mpMatchedKF, mpCurrentKF, NonCorrectedSim3, CorrectedSim3, LoopConnections, mbFixScale);
 
     // Add loop edge

@@ -232,15 +232,17 @@ void MapPoint::Replace(MapPoint* pMP)
         // Replace measurement in keyframe
         KeyFrame* pKF = mit->first;
 
+	//IsInKeyFrame()判断pMP是否已经被关键帧pKF所观测到，若已经被观测到，则返回true,反之返回false
+	//若pMP之前没有被pKF观测到
         if(!pMP->IsInKeyFrame(pKF))
         {
             pKF->ReplaceMapPointMatch(mit->second, pMP);// 让KeyFrame用pMP替换掉原来的MapPoint
-            pMP->AddObservation(pKF,mit->second);// 让MapPoint替换掉对应的KeyFrame
+            pMP->AddObservation(pKF,mit->second);// pMp添加pKF对它的观测，让MapPoint替换掉对应的KeyFrame，mit-second为MapPoint在pKF的索引
         }
         else
         {
-            // 产生冲突，即pKF中有两个特征点a,b（这两个特征点的描述子是近似相同的），这两个特征点对应两个MapPoint为this,pMP
-            // 然而在fuse的过程中pMP的观测更多，需要替换this，因此保留b与pMP的联系，去掉a与this的联系
+            // 如果pMP已经被该关键帧观测到了，那么意味这一个特征点(或者说俩个特征点，但是他们描述符非常接近)对应了俩个MapPoint为this,pMP,则产生冲突，
+            // 然而在fuse的过程中pMP的观测更多，需要替换this，因此保留b与pMP的联系，去掉a与this的联系 (即一个特征点对应了俩个空间点，则去掉当前的观测)
             pKF->EraseMapPointMatch(mit->second);
         }
     }
@@ -436,7 +438,7 @@ void MapPoint::UpdateNormalAndDepth()
     {
         KeyFrame* pKF = mit->first;
         cv::Mat Owi = pKF->GetCameraCenter();
-        cv::Mat normali = mWorldPos - Owi;
+        cv::Mat normali = mWorldPos - Owi; //关键帧对应的相机指向空间点
         normal = normal + normali/cv::norm(normali); // 对所有关键帧对该点的观测方向归一化为单位向量进行求和
         n++;
     } 

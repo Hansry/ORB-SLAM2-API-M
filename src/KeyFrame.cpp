@@ -360,7 +360,7 @@ MapPoint* KeyFrame::GetMapPoint(const size_t &idx)
 /**
  * @brief 更新图的连接
  * 
- * 1. 首先获得该关键帧的所有MapPoint点，统计观测到这些3d点的每个关键与其它所有关键帧之间的共视程度
+ * 1. 首先获得该关键帧的所有MapPoint点，统计观测到这些3d点的每个关键帧与其它所有关键帧之间的共视程度
  *    对每一个找到的关键帧，建立一条边，边的权重是该关键帧与当前关键帧公共3d点的个数。
  * 2. 并且该权重必须大于一个阈值，如果没有超过该阈值的权重，那么就只保留权重最大的边（与其它关键帧的共视程度比较高）
  * 3. 对这些连接按照权重从大到小进行排序，以方便将来的处理
@@ -371,7 +371,7 @@ void KeyFrame::UpdateConnections()
     // 在没有执行这个函数前，关键帧只和MapPoints之间有连接关系，这个函数可以更新关键帧之间的连接关系
 
     //===============1==================================
-    map<KeyFrame*,int> KFcounter; // 关键帧-权重，权重为其它关键帧与当前关键帧共视3d点的个数
+    map<KeyFrame*,int> KFcounter; // 关键帧-权重，关键帧为与当前关键帧具有共视点的关键帧， 权重为这些关键帧与当前关键帧共视3d点的个数
 
     vector<MapPoint*> vpMP;
 
@@ -396,6 +396,7 @@ void KeyFrame::UpdateConnections()
             continue;
 
         // 对于每一个MapPoint点，observations记录了可以观测到该MapPoint的所有关键帧
+	// observations为<观测到该空间点的关键帧，该空间点在该关键帧的索引>
         map<KeyFrame*,size_t> observations = pMP->GetObservations();
 
         for(map<KeyFrame*,size_t>::iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
@@ -436,7 +437,7 @@ void KeyFrame::UpdateConnections()
             vPairs.push_back(make_pair(mit->second,mit->first));
             // 更新KFcounter中该关键帧的mConnectedKeyFrameWeights
             // 更新其它KeyFrame的mConnectedKeyFrameWeights，更新其它关键帧与当前帧的连接权重
-            (mit->first)->AddConnection(this,mit->second);
+            (mit->first)->AddConnection(this,mit->second); //双向更新观测
         }
     }
 

@@ -1379,17 +1379,18 @@ bool Tracking::NeedNewKeyFrame()
     // Thresholds
     // 设定inlier阈值，和之前帧特征点匹配的inlier比例
 //     float thRefRatio = 0.75f; //(origin)
-    float thRefRatio = 0.80f; //(hansry)
+    float thRefRatio = 0.8f; //ICL-NUIM:0.85, KITTI: 0.8 (hansry)
     if(nKFs<2)
-        thRefRatio = 0.4f;// 关键帧只有一帧，那么插入关键帧的阈值设置很低
+       // 关键帧只有一帧，那么插入关键帧的阈值设置很低
+       thRefRatio = 0.4f;
     if(mSensor==System::MONOCULAR)
         thRefRatio = 0.9f;
 
     // MapPoints中和地图关联的比例阈值
 //     float thMapRatio = 0.35f;//(origin)
-    float thMapRatio = 0.45f; //(hansry)
+    float thMapRatio = 0.45f; //ICL-NUIM: 0.5, KITTI: 0.45(hansry)
     if(mnMatchesInliers>300)
-       thMapRatio = 0.30f; //(hansry)
+       thMapRatio = 0.3f; //ICL-NUIM:0.35, KITTI: 0.3(hansry)
 //         thMapRatio = 0.20f;//(origin)
 
     // Condition 1a: More than "MaxFrames" have passed from last keyframe insertion
